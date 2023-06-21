@@ -1,8 +1,7 @@
 package com.bankingapp.web;
 
-import com.bankingapp.DTO.AccountHistoryDTO;
-import com.bankingapp.DTO.AccountOperationDTO;
-import com.bankingapp.DTO.BankAccountDTO;
+import com.bankingapp.DTO.*;
+import com.bankingapp.Exceptions.BalanceNotSufficientException;
 import com.bankingapp.Exceptions.BankAccountNotFoundException;
 import com.bankingapp.services.BankAccountService;
 import org.springframework.web.bind.annotation.*;
@@ -37,4 +36,29 @@ public class BankAccountRestAPI {
             @RequestParam(name="size",defaultValue = "5")int size) throws BankAccountNotFoundException {
         return bankAccountService.getAccountHistory(accountId,page,size);
     }
+
+    @PostMapping(path = "/accounts/debit")
+    public DebitDTO debit(@RequestBody DebitDTO debitDTO) throws BankAccountNotFoundException, BalanceNotSufficientException {
+        this.bankAccountService.debit(debitDTO.accountId(), debitDTO.amount(), debitDTO.description());
+        return  debitDTO;
+    }
+
+    @PostMapping(path = "/accounts/credit")
+    public CreditDTO credit(@RequestBody CreditDTO creditDTO) throws BankAccountNotFoundException {
+        this.bankAccountService.credit(creditDTO.accountId(), creditDTO.amount(), creditDTO.description());
+        return  creditDTO;
+    }
+
+    @PostMapping(path = "/accounts/transfer")
+    public void transfer(@RequestBody TransferRequestDTO transferRequestDTO) throws BankAccountNotFoundException, BalanceNotSufficientException {
+        this.bankAccountService.transfer(transferRequestDTO.accountSource(), transferRequestDTO.accountDestination(), transferRequestDTO.amount());
+    }
 }
+
+
+
+
+
+
+
+
